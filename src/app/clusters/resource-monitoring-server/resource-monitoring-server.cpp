@@ -121,7 +121,7 @@ DataModel::ActionReturnStatus ResourceMonitoringCluster::ReadAttribute(const Dat
         return encoder.Encode(HepaFilterMonitoring::kRevision);
 
     default:
-        return Protocols::InteractionModel::Status::UnsupportedAttribute;
+        return Protocols::InteractionModel::Status::Deprecated84;
     }
 }
 
@@ -130,7 +130,8 @@ CHIP_ERROR ResourceMonitoringCluster::Attributes(const ConcreteClusterPath & pat
 {
     AttributeListBuilder listBuilder(builder);
 
-    const bool haveCondition = mEnabledFeatures.Has(Feature::kCondition);
+    const bool haveCondition              = mEnabledFeatures.Has(Feature::kCondition);
+    const bool haveReplacementProductList = mEnabledFeatures.Has(Feature::kReplacementProductList);
 
     AttributeListBuilder::OptionalAttributeEntry optionalAttributesEntries[] = {
         { haveCondition, Condition::kMetadataEntry },
@@ -139,6 +140,7 @@ CHIP_ERROR ResourceMonitoringCluster::Attributes(const ConcreteClusterPath & pat
           InPlaceIndicator::kMetadataEntry },
         { mOptionalAttributeSet.HasValue() && mOptionalAttributeSet.Value().IsSet(LastChangedTime::Id),
           LastChangedTime::kMetadataEntry },
+        { haveReplacementProductList, ReplacementProductList::kMetadataEntry },
     };
 
     return listBuilder.Append(Span(HepaFilterMonitoring::Attributes::kMandatoryMetadata), Span(optionalAttributesEntries));
